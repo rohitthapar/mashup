@@ -1,17 +1,17 @@
 from pytube import YouTube
 import os
 import sys
+from os import path 
 from youtubesearchpython import VideosSearch
 
 def mashup(name, nov):
-    name=input("Enter the name of the artist")
-    nov=int(input("Enter the no. of videos"))
+    # name=input("Enter the name of the artist")
+    # nov=int(input("Enter the no. of videos"))
     videosSearch = VideosSearch(str(name), limit = nov)
     res=[]
     for i in range(nov):
         res.append(videosSearch.result()['result'][i]['link'])
-
-
+    print(res)
     namesList=[]
     for i in range(nov):
         yt = YouTube(str(res[i]))
@@ -26,22 +26,27 @@ def mashup(name, nov):
         print(yt.title + " has been successfully downloaded.")
 
 def checkRequirements() :
-    if len(sys.argv) == 4:
+    # print(len(sys.argv))
+    if len(sys.argv) == 5:
         # singerName
-        singerName = sys.argv[2].lower()
-        noOfVideos = sys.argv[3]
+        # print(sys.argv[2])
+        singerName = sys.argv[1].lower()
+        noOfVideos = int(sys.argv[2])
         #audioDuration
-        audioDuration = sys.argv[4]
-        if audioDuration < 10:
-            print("Audio duration to be cut should be more")
+        audioDuration = int(sys.argv[3])
+        # if audioDuration < 10:
+        #     print("Audio duration to be cut should be more")
         # resultFileName
         resultFileName = sys.argv[-1].lower()
         if ".mp3" not in resultFileName:
             print("RESULT FILENAME SHOULD CONTAIN '.mp3'")
-            mashup(singerName, noOfVideos)
             return
-
+        print(noOfVideos)
+        mashup(singerName, noOfVideos)
+            # return
+        
         print("SAMPLE INPUT : python <programName> <singerName> <noOfVideos> <audioDuration> <resultFileName>")
         return
 
 checkRequirements()
+# mashup()
