@@ -45,6 +45,9 @@ def merge(nov, namesList, nos, outputFile):
     finalSound.export("{}".format(outputFile),format="mp3")
     print("---MASHUP CREATED---")
 
+    for i in range(nov):
+        os.remove(namesList[i])
+
 def mashup():
     if len(sys.argv) != 5:
         exit(1)
