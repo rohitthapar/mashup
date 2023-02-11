@@ -50,6 +50,7 @@ def merge(nov, namesList, nos, outputFile):
 
 def mashup():
     if len(sys.argv) != 5:
+        print("SAMPLE INPUT : python <programName> <singerName> <noOfVideos> <audioDuration> <resultFileName>")
         exit(1)
     else:
         name = str(sys.argv[1])
