@@ -1,12 +1,12 @@
-from youtubesearchpython import VideosSearch
 from pytube import YouTube
-from pydub import AudioSegment
 import os
 import sys
+# sys.path.append('/Users/rohitthapar/ffmpeg ')
+from os import path 
+from youtubesearchpython import VideosSearch
+from pydub import AudioSegment 
 
 def searchVids(name, nov):
-    # name=input("Enter the name of the artist")
-    # nov=int(input("Enter the no. of videos"))
     videosSearch = VideosSearch(str(name), limit = nov)
     res=[]
     for i in range(nov):
@@ -29,35 +29,33 @@ def downloadVids(nov, res):
     for i in range(nov):
         print(namesList[i])    
     return namesList
-# The Local Train - Dil Mere (Official).mp3
-# /The Local Train - Dil Mere (Official).mp3
-def merge(nov, namesList, EndSec, outputFile):
+
+
+def merge(nov, namesList, nos, outputFile):
     # EndSec = int(input("Enter the End second "))
-    EndSec=EndSec*1000
+    nos = nos*1000
     for i in range(nov):
         sound1 = AudioSegment.from_file(str(namesList[i]))
         print("Extracting Sound from your audio file")
-        extract = sound1[10:EndSec]
+        extract = sound1[nos:]
         if(i==0):
             finalSound=extract
         else:
             finalSound = finalSound.append(extract,crossfade=1500)
-    finalSound.export("{}.mp3".format(outputFile),format="mp3")
+    finalSound.export("{}".format(outputFile),format="mp3")
+    print("---MASHUP CREATED---")
 
 def mashup():
     if len(sys.argv) != 5:
-        print("How to use: python topsis.py inputfile.csv '1,1,1,1,1' '+,+,+,+,+' result.csv ")
         exit(1)
     else:
-        # downloadFlag=0
         name = str(sys.argv[1])
         nov=int(sys.argv[2])
-        EndSec=int(sys.argv[3])
+        nos=int(sys.argv[3])
         outputFile=str(sys.argv[4])
         res=searchVids(name,nov)
-        # while not downloadFlag:
         namesList=downloadVids(nov,res)
-        merge(nov, namesList, EndSec,outputFile)
+        merge(nov, namesList, nos,outputFile)
     
 if __name__ == "__main__":
     mashup()
