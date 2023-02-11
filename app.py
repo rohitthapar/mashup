@@ -1,10 +1,13 @@
 from pytube import YouTube
 import os
 import sys
+# sys.path.append('/Users/rohitthapar/ffmpeg ')
 from os import path 
 from youtubesearchpython import VideosSearch
+from pydub import AudioSegment 
 
-def mashup(name, nov):
+
+def mashup(name, nov, nos, result):
     # name=input("Enter the name of the artist")
     # nov=int(input("Enter the no. of videos"))
     videosSearch = VideosSearch(str(name), limit = nov)
@@ -24,6 +27,15 @@ def mashup(name, nov):
         namesList.append(new_file)
         os.rename(out_file, new_file)
         print(yt.title + " has been successfully downloaded.")
+    
+    print("CREATING MASHUP")
+    for i in range(len(namesList)):
+        song = AudioSegment.from_mp3(new_file)
+        time_n = nos*1000
+        songEdit = song[time_n:]
+        mashup = mashup + songEdit
+    mashup.export(result, format = "mp3")
+
 
 def checkRequirements() :
     # print(len(sys.argv))
@@ -41,10 +53,9 @@ def checkRequirements() :
         if ".mp3" not in resultFileName:
             print("RESULT FILENAME SHOULD CONTAIN '.mp3'")
             return
-        print(noOfVideos)
-        mashup(singerName, noOfVideos)
+        # print(noOfVideos)
+        mashup(singerName, noOfVideos, audioDuration, resultFileName)
             # return
-        
         print("SAMPLE INPUT : python <programName> <singerName> <noOfVideos> <audioDuration> <resultFileName>")
         return
 
