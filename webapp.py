@@ -1,10 +1,12 @@
 import streamlit as st
 st.title("MASHUP")
 
+zip = ".zip"
 name = st.text_input("Enter the Singer Name")
 nov = st.text_input("Enter Number of videos")
 nos = st.text_input("Enter Number of Seconds you want to trim the audio")
 outputFile = st.text_input("Enter Output File name with .mp3 extension")
+zipFile= outputFile[:-4] + zip
 Email_id = st.text_input("Email ID", value="test@test.com")
 
 submit = st.button("Submit")
@@ -13,6 +15,7 @@ if submit:
     from pytube import YouTube
     import sys
     import os
+    import io
     from os import path 
     from youtubesearchpython import VideosSearch
     from pydub import AudioSegment 
@@ -56,9 +59,11 @@ if submit:
 
         for i in range(nov):
             os.remove(namesList[i])
-        return newFile
+        buffered_reader = io.BufferedRandom(newFile)
+        fileName = buffered_reader.name
+        return fileName
 
-    def mail(audioFile, mailid):
+    def mail(audioFile, mailid,zipFile):
         from email import message
         import os 
         from email.message import EmailMessage
@@ -69,8 +74,11 @@ if submit:
         from email.mime.text import MIMEText
         from email.mime.base import MIMEBase
         from email import encoders
-        from email.mime.audio import MIMEAudio
         from pathlib import Path
+        from zipfile import ZipFile
+
+        with ZipFile(zipFile, 'w') as zip_file:
+            zip_file.write(audioFile)
 
         email_sender = 'rohit206thapar@gmail.com'
         password = 'viohznyupsttwxen'
@@ -84,26 +92,36 @@ if submit:
         message = MIMEMultipart()
         message['from'] = email_sender
         message['to'] = email_receiver
-        message['subject'] = "MASHUP by ROHIT THAPAR"
-        message.attach(MIMEText(" Please find the below attachment "))
-        # message.attach(MIMEAudio(Path(audioFile).read_bytes(), 'rb'))
+        message['subject'] = "MASHUP - By ROHIT THAPAR"
+        message.attach(MIMEText("Please Find the Below attachment"))
+
+
+        with open(zipFile, 'rb') as f:
+            part = MIMEBase('application', "octet-stream")
+            part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment', filename=zipFile)
+            message.attach(part)
 
         with smtplib.SMTP(host="smtp.gmail.com", port = 587) as smtp:
             smtp.ehlo()
             smtp.starttls()
             smtp.login(email_sender, password)
-            smtp.send_message(message)
-            st.write("Sent....")
+            smtp.sendmail(email_sender, email_receiver, message.as_string())
+            st.write("Email Sent Successfully.... ENJOY YOUR MASHUP")
+            st.write("Check Spam Folder also")
+
 
     name = name
     nov = int(nov)
     nos = int(nos)
     mailID = Email_id
     outputFile = outputFile
+    zipFile = zipFile
     res=searchVids(name,nov)
     namesList=downloadVids(nov,res)
     audioFile = merge(nov, namesList, nos,outputFile)
-    mail(audioFile, mailID)
+    mail(audioFile, mailID, zipFile)
 
     
 

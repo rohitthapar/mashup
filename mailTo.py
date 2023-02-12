@@ -8,8 +8,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from email.mime.audio import MIMEAudio
 from pathlib import Path
+from zipfile import ZipFile
+
+with ZipFile('nzip.zip', 'w') as zip_file:
+    zip_file.write('new1.mp3')
 
 email_sender = 'rohit206thapar@gmail.com'
 password = 'viohznyupsttwxen'
@@ -25,21 +28,18 @@ message['from'] = email_sender
 message['to'] = email_receiver
 message['subject'] = "test"
 message.attach(MIMEText("Body"))
-message.attach(MIMEAudio(Path("new.mp3").read_bytes(), 'rb'))
+
+
+with open('nzip.zip', 'rb') as f:
+    part = MIMEBase('application', "octet-stream")
+    part.set_payload(f.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', 'attachment', filename='nzip.zip')
+    message.attach(part)
 
 with smtplib.SMTP(host="smtp.gmail.com", port = 587) as smtp:
     smtp.ehlo()
     smtp.starttls()
     smtp.login(email_sender, password)
-    smtp.send_message(message)
+    smtp.sendmail(email_sender, email_receiver, message.as_string())
     print("Sent....")
-# em = EmailMessage()
-# em['From'] = email_sender
-# em['To'] = email_receiver
-# em['Subject'] = subject
-# em.set_content(body)
-# context = ssl.create_default_context()
-
-# with smtplib.SMTP_SSL('smtp.gmail.com', 465, context  = context) as smtp:
-#     smtp.login(email_sender, password)
-#     smtp.sendmail(email_sender , email_receiver, em.as_string())
