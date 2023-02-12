@@ -58,36 +58,42 @@ if submit:
             os.remove(namesList[i])
         return newFile
 
-    def mail(audioFile, mailID):
-
+    def mail(audioFile, mailid):
+        from email import message
+        import os 
+        from email.message import EmailMessage
+        from re import sub
+        import ssl
         import smtplib
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
         from email.mime.base import MIMEBase
         from email import encoders
+        from email.mime.audio import MIMEAudio
+        from pathlib import Path
 
-        fromaddr = "rohit206thapar@gmail.com"
-        toaddr = mailID
-        msg = MIMEMultipart()
-        msg['From'] = fromaddr
-        msg['To'] = toaddr
-        msg['Subject'] = "Your MASHUP"
-        body = "Body_of_the_mail"
-        msg.attach(MIMEText(body, 'plain'))
-        filename = audioFile
-        attachment = open("/audioFile", "rb")
-        p = MIMEBase('application', 'octet-stream')
-        p.set_payload((attachment).read())
-        encoders.encode_base64(p)
-        p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-        msg.attach(p)
-        s = smtplib.SMTP('smtp.gmail.com', 587)
-        s.starttls()
-        s.login(fromaddr, "Password_of_the_sender")
-        text = msg.as_string()
-        s.sendmail(fromaddr, toaddr, text)
-        s.quit()
+        email_sender = 'rohit206thapar@gmail.com'
+        password = 'viohznyupsttwxen'
+        email_receiver = mailid
 
+        # subject = "Mashup"
+        # body = """ 
+        #     Please find the below attachment 
+        # """
+
+        message = MIMEMultipart()
+        message['from'] = email_sender
+        message['to'] = email_receiver
+        message['subject'] = "MASHUP by ROHIT THAPAR"
+        message.attach(MIMEText(" Please find the below attachment "))
+        # message.attach(MIMEAudio(Path(audioFile).read_bytes(), 'rb'))
+
+        with smtplib.SMTP(host="smtp.gmail.com", port = 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(email_sender, password)
+            smtp.send_message(message)
+            st.write("Sent....")
 
     name = name
     nov = int(nov)
@@ -97,49 +103,8 @@ if submit:
     res=searchVids(name,nov)
     namesList=downloadVids(nov,res)
     audioFile = merge(nov, namesList, nos,outputFile)
+    mail(audioFile, mailID)
 
     
 
-    # def send_with_mailjet(sender, to, filename, base64encoded=""):
-    #     from mailjet_rest import Client
-    #     import os
-    #     api_key = "3ab9d3a323b39d93b8592aa902d6db08"
-    #     api_secret = '62e107b8f4bd191392609dd15be4915e'
-    #     mailjet = Client(auth=(api_key, api_secret), version='v3.1')
-    #     data = {
-    #         'Messages': [
-    #             {
-    #                 "From": {
-    #                     "Email": sender,
-    #                     "Name": "TOPSIS Calculator"
-    #                 },
-    #                 "To": [
-    #                     {
-    #                         "Email": to,
-    #                         "Name": "Sir"
-    #                     }
-    #                 ],
-    #                 "Subject": "Your TOPSIS Result",
-    #                 "TextPart": "Topsis result analysis",
-    #                 "HTMLPart": "<h3>Topsis result anaysis of the given input</h3>",
-    #                 "Attachments": [
-    #                     {
-    #                         "ContentType": "text/csv",
-    #                         "Filename": filename,
-    #                         "Base64Content": encoded
-    #                     }
-    #                 ]
-    #             }
-    #         ]
-    #     }
-    #     result = mailjet.send.create(data=data)
-    #     print(result.status_code)
-    #     print(result.json())
-    # import base64
-    # data = open(filenameout, "r").read()
-    # data = data.encode("utf-8")
-    # encoded = base64.b64encode(data)
-    # encoded = encoded.decode("utf-8")
-    # send_with_mailjet("thaprt206@gmail.com", Email_id, "result.csv", encoded)
-    # st.write("Email sent successfully , Please check your Spam folder also for mail")
-    # os.remove(filenameout)
+   
