@@ -4,6 +4,13 @@
 # 3CO19
 
 import streamlit as st
+from pytube import YouTube
+import sys
+import os
+import io
+from os import path 
+from youtubesearchpython import VideosSearch
+from pydub import AudioSegment 
 st.title("MASHUP")
 
 zip = ".zip"
@@ -17,14 +24,6 @@ Email_id = st.text_input("Email ID", value="test@test.com")
 submit = st.button("Submit")
 
 if submit:
-    from pytube import YouTube
-    import sys
-    import os
-    import io
-    from os import path 
-    from youtubesearchpython import VideosSearch
-    from pydub import AudioSegment 
-
     def searchVids(name, nov):
         videosSearch = VideosSearch(str(name), limit = nov)
         res=[]
