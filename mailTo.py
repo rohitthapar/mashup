@@ -15,7 +15,7 @@ with ZipFile('nzip.zip', 'w') as zip_file:
     zip_file.write('new1.mp3')
 
 email_sender = 'rohit206thapar@gmail.com'
-password = 'viohznyupsttwxen'
+password = random_password
 email_receiver = 'thaprt206@gmail.com'
 
 subject = "Mashup"
